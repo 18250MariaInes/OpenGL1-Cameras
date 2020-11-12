@@ -22,6 +22,8 @@ rectVerts = np.array([ 0.5, 0.5, 0.5,  1,0,0,
                       -0.5,-0.5,-0.5,  1,1,1,
                       -0.5, 0.5,-0.5,  0,0,0 ], dtype=np.float32)
 
+
+#cube-- it works
 rectIndices = np.array([ #front
                          0, 1, 3,
                          1, 2, 3,
@@ -41,6 +43,12 @@ rectIndices = np.array([ #front
                          4, 0, 7,
                          0, 3, 7], dtype=np.uint32)
 
+#triangle-- working on it
+vertex_data = np.array([
+    -5, -5, 0.0,
+     5, -5, 0.0,
+     0.0,  5, 0.0
+], dtype=np.uint32)
 
 
 
@@ -52,22 +60,23 @@ class Renderer(object):
         glEnable(GL_DEPTH_TEST)
         glViewport(0, 0, self.width, self.height)
 
-        # Perspective Projection Matrix
+        # Matriz de perspectiva/proyeccion
         self.projection = glm.perspective(glm.radians(60), self.width / self.height, 0.1, 1000)
 
+        #posición inicial del cubp
         self.cubePos = glm.vec3(0,0,0)
 
-
+    #solo dibujar el esqueleto del objeto
     def wireframeMode(self):
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
-
+    #llenar el objeto cargado
     def filledMode(self):
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
-
+    #mover el cubo en el espacio
     def translateCube(self, x, y, z):
         self.cubePos = glm.vec3(x,y,z)
 
-
+    #set shader para objeto
     def setShaders(self, vertexShader, fragShader):
 
         if vertexShader is not None or fragShader is not None:
@@ -78,6 +87,7 @@ class Renderer(object):
 
         glUseProgram(self.active_shader)
 
+    #cargar objeto a visualizar
     def createObjects(self):
 
         self.VBO = glGenBuffers(1) #Vertex Buffer Object
@@ -100,13 +110,16 @@ class Renderer(object):
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 4 * 6, ctypes.c_void_p(4 * 3))
         glEnableVertexAttribArray(1)
 
-
+    #funcion de renderizaje
     def render(self):
         glClearColor(0.2, 0.2, 0.2, 1)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT )
 
         i = glm.mat4(1)
-        # Model/Object matrix: translate * rotate * scale
+
+        #como las matrices vistas en Static rendering
+        
+        # Model/Object matrix: translate * rotate * scale 
         translate = glm.translate(i, self.cubePos)
         pitch = glm.rotate(i, glm.radians( 0 ), glm.vec3(1,0,0))
         yaw   = glm.rotate(i, glm.radians( 0 ), glm.vec3(0,1,0))
